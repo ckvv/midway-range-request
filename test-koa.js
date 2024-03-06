@@ -30,22 +30,27 @@ app.use(async ctx => {
     res.setHeader('Content-Length', `${end - start + 1}`);
     res.setHeader('Accept-Ranges', 'bytes');
     res.statusCode = 206;
-    // ctx.body = createReadStream(filePath, { start, end, autoClose: true });
 
-    ctx.respond = false;
-    createReadStream(filePath, { start, end, autoClose: true }).pipe(res);
+    // ctx.respond = false;
+    // createReadStream(filePath, { start, end, autoClose: true }).pipe(res);
+
+    ctx.body = createReadStream(filePath, { start, end, autoClose: true });
   } else {
     res.setHeader('Content-Length', `${fileSize}`);
 
-    // ctx.body = createReadStream(filePath);
+    // ctx.respond = false;
+    // createReadStream(filePath, { autoClose: true }).pipe(res);
 
-    ctx.respond = false;
-    createReadStream(filePath).pipe(res);
+    ctx.body = createReadStream(filePath);
   }
 });
 
 process.on('uncaughtException', err => {
   console.log('uncaughtException:', err);
+});
+
+app.on('error', err => {
+  console.error('server error', err);
 });
 
 app.listen(3000);
